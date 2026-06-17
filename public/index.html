@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>快拳对决</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Toast notification -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Home Screen -->
+  <div id="screen-home" class="screen active">
+    <div class="home-content">
+      <div class="logo">
+        <span class="logo-snap">快拳</span><span class="logo-duel">对决</span>
+      </div>
+      <p class="tagline">实时猜拳对战 · 五局三胜</p>
+      <button id="btn-start" class="btn btn-primary btn-large">开始匹配</button>
+    </div>
+  </div>
+
+  <!-- Waiting Screen -->
+  <div id="screen-waiting" class="screen">
+    <div class="waiting-content">
+      <div class="spinner"></div>
+      <p class="waiting-text">正在匹配对手…</p>
+      <p class="waiting-countdown" id="waiting-countdown"></p>
+      <button id="btn-cancel" class="btn btn-ghost">取消</button>
+    </div>
+  </div>
+
+  <!-- Battle Screen -->
+  <div id="screen-battle" class="screen">
+    <div class="scoreboard">
+      <div class="score-side">
+        <div class="score-label">我方</div>
+        <div class="score-value" id="score-you">0</div>
+      </div>
+      <div class="score-meta">
+        <div class="score-vs">VS</div>
+        <div class="score-target">先到3胜</div>
+      </div>
+      <div class="score-side">
+        <div class="score-label">对手</div>
+        <div class="score-value" id="score-opp">0</div>
+      </div>
+    </div>
+
+    <div class="battle-status" id="battle-status">请出拳</div>
+
+    <div class="choices" id="choices">
+      <button class="choice-btn" data-choice="rock">
+        <span class="choice-emoji">✊</span>
+        <span class="choice-label">石头</span>
+      </button>
+      <button class="choice-btn" data-choice="paper">
+        <span class="choice-emoji">🖐</span>
+        <span class="choice-label">布</span>
+      </button>
+      <button class="choice-btn" data-choice="scissors">
+        <span class="choice-emoji">✌️</span>
+        <span class="choice-label">剪刀</span>
+      </button>
+    </div>
+
+    <!-- Round result overlay -->
+    <div id="round-overlay" class="round-overlay hidden">
+      <div class="reveal-row">
+        <div class="reveal-side">
+          <div class="reveal-label">我方</div>
+          <div class="reveal-emoji" id="reveal-you"></div>
+        </div>
+        <div class="reveal-vs">VS</div>
+        <div class="reveal-side">
+          <div class="reveal-label">对手</div>
+          <div class="reveal-emoji" id="reveal-opp"></div>
+        </div>
+      </div>
+      <div class="round-result-text" id="round-result-text"></div>
+      <div class="round-scores" id="round-scores"></div>
+    </div>
+
+    <button id="btn-leave" class="btn btn-ghost btn-small">离开</button>
+  </div>
+
+  <!-- Result Screen -->
+  <div id="screen-result" class="screen">
+    <div class="result-content">
+      <div class="result-banner" id="result-banner"></div>
+      <div class="result-score" id="result-score"></div>
+      <button id="btn-rematch" class="btn btn-primary btn-large">再来一局</button>
+      <button id="btn-home" class="btn btn-ghost">返回首页</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

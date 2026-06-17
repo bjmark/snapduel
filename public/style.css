@@ -1,0 +1,449 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0d0d1a;
+  --surface: #161628;
+  --surface2: #1e1e38;
+  --accent: #7c4dff;
+  --accent-light: #aa80ff;
+  --success: #00e676;
+  --danger: #ff4d6d;
+  --warning: #ffb300;
+  --text: #e8e8ff;
+  --text-muted: #7a7a9d;
+  --border: #2a2a4a;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* ── Screens ── */
+.screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.9rem;
+  color: var(--text);
+  z-index: 200;
+  white-space: nowrap;
+  animation: slideDown 0.25s ease;
+}
+
+.toast.hidden {
+  display: none;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Buttons ── */
+.btn {
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  transition: all 0.15s ease;
+  letter-spacing: 0.03em;
+  font-family: inherit;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(124, 77, 255, 0.45);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--text-muted);
+}
+
+.btn-large {
+  font-size: 1.15rem;
+  padding: 1rem 3rem;
+  border-radius: 16px;
+}
+
+.btn-small {
+  font-size: 0.82rem;
+  padding: 0.45rem 1.1rem;
+}
+
+/* ── Home ── */
+.home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.logo {
+  font-size: 4.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.logo-snap { color: var(--accent-light); }
+.logo-duel { color: var(--text); }
+
+.tagline {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ── Waiting ── */
+.waiting-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 52px;
+  height: 52px;
+  border: 4px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.waiting-text {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.waiting-countdown {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  min-height: 2.4rem;
+  transition: color 0.3s;
+}
+
+.waiting-countdown.urgent {
+  color: var(--danger);
+}
+
+/* ── Battle ── */
+#screen-battle {
+  gap: 2.25rem;
+  position: relative;
+}
+
+.scoreboard {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.25rem 2.5rem;
+}
+
+.score-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 60px;
+}
+
+.score-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+}
+
+.score-value {
+  font-size: 2.75rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.score-value.bump {
+  transform: scale(1.35);
+}
+
+.score-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.score-vs {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--border);
+}
+
+.score-target {
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.battle-status {
+  font-size: 1rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  min-height: 1.4em;
+  text-align: center;
+}
+
+/* ── Choice buttons ── */
+.choices {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.choice-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  padding: 1.6rem 2.2rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.choice-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--surface2);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 28px rgba(124, 77, 255, 0.35);
+}
+
+.choice-btn:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
+.choice-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.choice-btn.selected {
+  border-color: var(--accent-light);
+  background: var(--surface2);
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.25);
+}
+
+.choice-emoji {
+  font-size: 2.6rem;
+  line-height: 1;
+  display: block;
+}
+
+.choice-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* ── Round overlay ── */
+.round-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 13, 26, 0.96);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  z-index: 50;
+  animation: fadeIn 0.25s ease;
+}
+
+.round-overlay.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.reveal-row {
+  display: flex;
+  align-items: center;
+  gap: 3.5rem;
+}
+
+.reveal-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.reveal-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+}
+
+.reveal-emoji {
+  font-size: 5.5rem;
+  line-height: 1;
+  animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.reveal-vs {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--border);
+  letter-spacing: 0.1em;
+}
+
+@keyframes popIn {
+  from { transform: scale(0) rotate(-15deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);  opacity: 1; }
+}
+
+.round-result-text {
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-align: center;
+  animation: fadeUp 0.35s ease 0.2s both;
+}
+
+.round-scores {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  animation: fadeUp 0.35s ease 0.3s both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Leave button anchored to bottom */
+#btn-leave {
+  position: absolute;
+  bottom: 2rem;
+}
+
+/* ── Result Screen ── */
+.result-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.result-banner {
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.result-banner.win  { color: var(--success); }
+.result-banner.lose { color: var(--danger); }
+
+.result-score {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .logo { font-size: 3rem; }
+
+  .scoreboard { padding: 1rem 1.5rem; gap: 1.25rem; }
+  .score-value { font-size: 2.25rem; }
+
+  .choices { gap: 0.75rem; }
+  .choice-btn { padding: 1.2rem 1.5rem; }
+  .choice-emoji { font-size: 2.1rem; }
+
+  .reveal-emoji { font-size: 4rem; }
+  .reveal-row { gap: 2rem; }
+  .round-result-text { font-size: 1.5rem; }
+}
