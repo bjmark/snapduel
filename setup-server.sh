@@ -50,7 +50,7 @@ npm ci --omit=dev
 if pm2 describe snapduel &>/dev/null; then
   pm2 restart snapduel
 else
-  PORT=3000 pm2 start server.js --name snapduel
+  PORT=5000 pm2 start server.js --name snapduel
 fi
 pm2 save
 
