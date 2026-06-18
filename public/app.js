@@ -8,6 +8,7 @@ const EMOJI = {
 
 const MATCH_TIMEOUT_SEC = 30;
 let countdownTimer = null;
+let roundRevealTimer = null;
 
 function startCountdown() {
   const el = document.getElementById('waiting-countdown');
@@ -85,6 +86,7 @@ socket.on('match_timeout', () => {
 });
 
 socket.on('match_found', () => {
+  clearTimeout(roundRevealTimer);
   clearCountdown();
   updateScore({ you: 0, opponent: 0 });
   showScreen('screen-battle');
@@ -99,6 +101,7 @@ socket.on('choice_acknowledged', () => {
 });
 
 socket.on('round_result', (data) => {
+  clearTimeout(roundRevealTimer);
   const { yourChoice, opponentChoice, roundWinner, scores, matchOver, matchWinner } = data;
 
   // Update scoreboard
@@ -133,7 +136,7 @@ socket.on('round_result', (data) => {
 
   document.getElementById('round-overlay').classList.remove('hidden');
 
-  setTimeout(() => {
+  roundRevealTimer = setTimeout(() => {
     document.getElementById('round-overlay').classList.add('hidden');
 
     if (matchOver) {
@@ -146,6 +149,7 @@ socket.on('round_result', (data) => {
 });
 
 socket.on('opponent_left', () => {
+  clearTimeout(roundRevealTimer);
   showToast('对手已离开');
   showScreen('screen-home');
 });
@@ -205,6 +209,7 @@ document.getElementById('btn-leave').addEventListener('click', () => {
 document.querySelectorAll('.choice-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     if (btn.disabled) return;
+    setChoicesEnabled(false);
     btn.classList.add('selected');
     socket.emit('choose', btn.dataset.choice);
   });
