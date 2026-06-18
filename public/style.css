@@ -402,8 +402,8 @@ body {
 
 /* Leave button anchored to bottom */
 #btn-leave {
-  position: absolute;
-  bottom: 2rem;
+  margin-top: auto;
+  margin-bottom: 0.5rem;
 }
 
 /* ── Result Screen ── */
