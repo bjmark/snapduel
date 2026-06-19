@@ -88,6 +88,7 @@ socket.on('match_timeout', () => {
 socket.on('match_found', () => {
   clearTimeout(roundRevealTimer);
   clearCountdown();
+  document.getElementById('screen-waiting').classList.remove('private-mode');
   updateScore({ you: 0, opponent: 0 });
   showScreen('screen-battle');
   document.getElementById('round-overlay').classList.add('hidden');
@@ -188,15 +189,66 @@ function showMatchResult(winner, scores) {
   showScreen('screen-result');
 }
 
+// ── Private room helpers ───────────────────────────────────────────────────
+function showWaiting(mode) {
+  const el = document.getElementById('screen-waiting');
+  if (mode === 'private') {
+    el.classList.add('private-mode');
+  } else {
+    el.classList.remove('private-mode');
+    startCountdown();
+  }
+  showScreen('screen-waiting');
+}
+
+function renderCodeTiles(code) {
+  const container = document.getElementById('code-tiles');
+  container.innerHTML = '';
+  for (const ch of code) {
+    const tile = document.createElement('div');
+    tile.className = 'code-tile';
+    tile.textContent = ch;
+    container.appendChild(tile);
+  }
+}
+
+socket.on('private_room_created', ({ code }) => {
+  renderCodeTiles(code);
+  showWaiting('private');
+});
+
+socket.on('private_room_expired', () => {
+  showScreen('screen-home');
+  showToast('房间已过期（60秒无人加入）');
+});
+
+socket.on('join_error', ({ message }) => {
+  showToast(message);
+});
+
 // ── Button handlers ────────────────────────────────────────────────────────
 document.getElementById('btn-start').addEventListener('click', () => {
-  showScreen('screen-waiting');
-  startCountdown();
+  showWaiting('random');
   socket.emit('find_match');
+});
+
+document.getElementById('btn-create-room').addEventListener('click', () => {
+  socket.emit('create_private_room');
+});
+
+document.getElementById('btn-join-room').addEventListener('click', () => {
+  const code = document.getElementById('input-room-code').value.trim();
+  if (!code) return;
+  socket.emit('join_private_room', { code });
+});
+
+document.getElementById('input-room-code').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('btn-join-room').click();
 });
 
 document.getElementById('btn-cancel').addEventListener('click', () => {
   clearCountdown();
+  document.getElementById('screen-waiting').classList.remove('private-mode');
   socket.emit('leave');
   showScreen('screen-home');
 });
@@ -216,8 +268,7 @@ document.querySelectorAll('.choice-btn').forEach(btn => {
 });
 
 document.getElementById('btn-rematch').addEventListener('click', () => {
-  showScreen('screen-waiting');
-  startCountdown();
+  showWaiting('random');
   socket.emit('rematch');
 });
 

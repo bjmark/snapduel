@@ -432,6 +432,130 @@ body {
   letter-spacing: 0.05em;
 }
 
+/* ── Secondary button ── */
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+  background: var(--surface);
+  transform: translateY(-1px);
+}
+
+/* ── Home — private section ── */
+.home-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 280px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+}
+
+.home-divider::before,
+.home-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.private-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 280px;
+}
+
+.join-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.join-row .btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.room-code-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.2em;
+  padding: 0.65rem 1rem;
+  text-align: center;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.room-code-input::placeholder {
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.room-code-input:focus {
+  border-color: var(--accent);
+}
+
+/* ── Waiting screen — random vs private mode ── */
+.waiting-random,
+.waiting-private {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.waiting-private { display: none; }
+
+#screen-waiting.private-mode .waiting-random { display: none; }
+#screen-waiting.private-mode .waiting-private { display: flex; }
+
+.waiting-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* ── Room code tiles ── */
+.code-tiles {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.code-tile {
+  width: 48px;
+  height: 58px;
+  background: var(--surface2);
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--accent-light);
+  letter-spacing: 0;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
 /* ── Responsive ── */
 @media (max-width: 480px) {
   .logo { font-size: 3rem; }

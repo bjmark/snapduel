@@ -18,18 +18,37 @@
         <span class="logo-snap">快拳</span><span class="logo-duel">对决</span>
       </div>
       <p class="tagline">实时猜拳对战 · 五局三胜</p>
-      <button id="btn-start" class="btn btn-primary btn-large">开始匹配</button>
+      <button id="btn-start" class="btn btn-primary btn-large">随机匹配</button>
+
+      <div class="home-divider"><span>或和朋友玩</span></div>
+
+      <div class="private-section">
+        <button id="btn-create-room" class="btn btn-secondary">创建房间</button>
+        <div class="join-row">
+          <input id="input-room-code" class="room-code-input" type="text"
+                 placeholder="输入房间码" maxlength="5"
+                 autocomplete="off" autocapitalize="characters" spellcheck="false">
+          <button id="btn-join-room" class="btn btn-secondary">加入</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Waiting Screen -->
   <div id="screen-waiting" class="screen">
-    <div class="waiting-content">
+    <!-- Random mode -->
+    <div class="waiting-random">
       <div class="spinner"></div>
       <p class="waiting-text">正在匹配对手…</p>
       <p class="waiting-countdown" id="waiting-countdown"></p>
-      <button id="btn-cancel" class="btn btn-ghost">取消</button>
     </div>
+    <!-- Private mode -->
+    <div class="waiting-private">
+      <p class="waiting-hint">把房间码发给朋友</p>
+      <div class="code-tiles" id="code-tiles"></div>
+      <p class="waiting-text">等待朋友加入…</p>
+    </div>
+    <button id="btn-cancel" class="btn btn-ghost">取消</button>
   </div>
 
   <!-- Battle Screen -->

@@ -12,11 +12,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const WIN_TARGET = 3;
 const MATCH_TIMEOUT_MS = 30000;
+const PRIVATE_ROOM_TIMEOUT_MS = 60000;
 
 let waitingPool = [];          // socket IDs waiting for a match
 const rooms = new Map();       // roomId -> room object
 const socketRoomMap = new Map(); // socketId -> roomId
 const matchTimers = new Map(); // socketId -> timeout handle
+
+const privateRooms = new Map();      // code -> { hostSocketId, timer }
+const socketPrivateRoom = new Map(); // socketId -> code (owned room)
+
+// ── Utilities ────────────────────────────────────────────────────────────────
 
 function resolveRound(a, b) {
   if (a === b) return 'draw';
@@ -27,6 +33,17 @@ function resolveRound(a, b) {
   ) return 'a';
   return 'b';
 }
+
+function generateRoomCode() {
+  const chars = 'ACDEFGHJKLMNPQRTUVWXY3479';
+  let code;
+  do {
+    code = Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  } while (privateRooms.has(code));
+  return code;
+}
+
+// ── Random matchmaking ────────────────────────────────────────────────────────
 
 function findOrCreateMatch(socket) {
   if (socketRoomMap.has(socket.id)) return;
@@ -43,7 +60,6 @@ function findOrCreateMatch(socket) {
 
   waitingPool.push(socket.id);
 
-  // Start 30-second matchmaking timeout
   const timer = setTimeout(() => {
     waitingPool = waitingPool.filter(id => id !== socket.id);
     matchTimers.delete(socket.id);
@@ -60,9 +76,27 @@ function cancelMatchTimer(socketId) {
   }
 }
 
+// ── Private room ─────────────────────────────────────────────────────────────
+
+function cancelPrivateRoom(socketId) {
+  const code = socketPrivateRoom.get(socketId);
+  if (!code) return;
+  const pr = privateRooms.get(code);
+  if (pr) {
+    clearTimeout(pr.timer);
+    privateRooms.delete(code);
+  }
+  socketPrivateRoom.delete(socketId);
+}
+
+// ── Room creation & leave ────────────────────────────────────────────────────
+
 function createRoom(socketA, socketB) {
   cancelMatchTimer(socketA.id);
   cancelMatchTimer(socketB.id);
+  cancelPrivateRoom(socketA.id);
+  cancelPrivateRoom(socketB.id);
+
   const roomId = randomUUID();
   const room = {
     roomId,
@@ -81,6 +115,7 @@ function createRoom(socketA, socketB) {
 
 function leaveRoom(socket) {
   cancelMatchTimer(socket.id);
+  cancelPrivateRoom(socket.id);
   waitingPool = waitingPool.filter(id => id !== socket.id);
 
   const roomId = socketRoomMap.get(socket.id);
@@ -100,12 +135,61 @@ function leaveRoom(socket) {
   }
 }
 
+// ── Socket events ────────────────────────────────────────────────────────────
+
 io.on('connection', (socket) => {
   socket.on('find_match', () => findOrCreateMatch(socket));
 
   socket.on('rematch', () => {
     leaveRoom(socket);
     findOrCreateMatch(socket);
+  });
+
+  socket.on('create_private_room', () => {
+    if (socketRoomMap.has(socket.id)) return; // already in a game
+    cancelPrivateRoom(socket.id);             // cancel any previous owned room
+
+    const code = generateRoomCode();
+
+    const timer = setTimeout(() => {
+      privateRooms.delete(code);
+      socketPrivateRoom.delete(socket.id);
+      if (socket.connected) socket.emit('private_room_expired');
+    }, PRIVATE_ROOM_TIMEOUT_MS);
+
+    privateRooms.set(code, { hostSocketId: socket.id, timer });
+    socketPrivateRoom.set(socket.id, code);
+
+    socket.emit('private_room_created', { code });
+  });
+
+  socket.on('join_private_room', ({ code }) => {
+    if (typeof code !== 'string') return;
+    const key = code.toUpperCase().trim();
+    const pr = privateRooms.get(key);
+
+    if (!pr) {
+      socket.emit('join_error', { message: '房间码无效或已过期' });
+      return;
+    }
+    if (pr.hostSocketId === socket.id) {
+      socket.emit('join_error', { message: '不能加入自己的房间' });
+      return;
+    }
+
+    const hostSocket = io.sockets.sockets.get(pr.hostSocketId);
+    if (!hostSocket?.connected) {
+      clearTimeout(pr.timer);
+      privateRooms.delete(key);
+      socket.emit('join_error', { message: '房间码无效或已过期' });
+      return;
+    }
+
+    clearTimeout(pr.timer);
+    privateRooms.delete(key);
+    socketPrivateRoom.delete(pr.hostSocketId);
+
+    createRoom(socket, hostSocket);
   });
 
   socket.on('choose', (choice) => {
@@ -117,7 +201,7 @@ io.on('connection', (socket) => {
     const room = rooms.get(roomId);
     if (!room) return;
 
-    if (room.choices[socket.id] !== null) return; // already chose this round
+    if (room.choices[socket.id] !== null) return;
 
     room.choices[socket.id] = choice;
     socket.emit('choice_acknowledged');
@@ -125,7 +209,6 @@ io.on('connection', (socket) => {
     const [idA, idB] = room.players;
     if (room.choices[idA] === null || room.choices[idB] === null) return;
 
-    // Both have chosen — resolve the round
     const choiceA = room.choices[idA];
     const choiceB = room.choices[idB];
     const result = resolveRound(choiceA, choiceB);
