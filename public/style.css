@@ -474,30 +474,18 @@ body {
   max-width: 280px;
 }
 
-.join-row {
-  display: flex;
-  gap: 0.5rem;
-  width: 100%;
-}
-
-.join-row .btn {
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
 .room-code-input {
-  flex: 1;
+  width: 100%;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   color: var(--text);
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 700;
   font-family: inherit;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.3em;
   padding: 0.65rem 1rem;
   text-align: center;
-  text-transform: uppercase;
   outline: none;
   transition: border-color 0.15s;
 }

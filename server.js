@@ -35,10 +35,9 @@ function resolveRound(a, b) {
 }
 
 function generateRoomCode() {
-  const chars = 'ACDEFGHJKLMNPQRTUVWXY3479';
   let code;
   do {
-    code = Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    code = String(Math.floor(Math.random() * 1000)).padStart(3, '0');
   } while (privateRooms.has(code));
   return code;
 }
@@ -165,7 +164,7 @@ io.on('connection', (socket) => {
 
   socket.on('join_private_room', ({ code }) => {
     if (typeof code !== 'string') return;
-    const key = code.toUpperCase().trim();
+    const key = code.trim();
     const pr = privateRooms.get(key);
 
     if (!pr) {
